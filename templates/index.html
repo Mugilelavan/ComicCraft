@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>ComicCraft AI</title>
+
+    <link
+        rel="stylesheet"
+        href="/static/css/style.css"
+    >
+</head>
+
+<body>
+
+<main class="container">
+
+    <section class="card">
+
+        <h1>🎨 ComicCraft</h1>
+
+        <p>
+            Create a 5-panel AI comic from your idea.
+        </p>
+
+        {% if error %}
+
+        <div class="error">
+            {{ error }}
+        </div>
+
+        {% endif %}
+
+        <form
+            action="/generate"
+            method="post"
+            id="comic-form"
+        >
+
+            <label for="story_prompt">
+                Story Prompt
+            </label>
+
+            <textarea
+                id="story_prompt"
+                name="story_prompt"
+                minlength="5"
+                maxlength="2000"
+                required
+                placeholder="A young inventor discovers a mysterious robot..."
+            ></textarea>
+
+
+            <label for="character_name">
+                Character Name
+            </label>
+
+            <input
+                id="character_name"
+                name="character_name"
+                maxlength="80"
+                required
+                placeholder="Arun"
+            >
+
+
+            <label for="setting">
+                Setting
+            </label>
+
+            <input
+                id="setting"
+                name="setting"
+                maxlength="120"
+                required
+                placeholder="Future Chennai"
+            >
+
+
+            <label for="tone">
+                Story Tone
+            </label>
+
+            <input
+                id="tone"
+                name="tone"
+                maxlength="50"
+                required
+                placeholder="Funny"
+            >
+
+
+            <label for="art_style">
+                Art Style
+            </label>
+
+            <input
+                id="art_style"
+                name="art_style"
+                maxlength="80"
+                required
+                placeholder="Comic book"
+            >
+
+
+            <button
+                id="generate-btn"
+                type="submit"
+            >
+                Generate Comic
+            </button>
+
+        </form>
+
+    </section>
+
+</main>
+
+
+<script src="/static/js/app.js"></script>
+
+</body>
+</html>

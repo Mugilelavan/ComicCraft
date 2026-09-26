@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Comic Preview</title>
+
+    <link
+        rel="stylesheet"
+        href="/static/css/style.css"
+    >
+</head>
+
+<body>
+
+<main class="container">
+
+    <section class="card">
+
+        <h1>📖 Comic Preview</h1>
+
+        <!-- Test Image -->
+        {% if test_image_url %}
+
+        <section class="panel">
+
+            <h2>Image Test</h2>
+
+            <img
+                class="comic-image"
+                src="{{ test_image_url }}"
+                alt="Generated test image"
+            >
+
+        </section>
+
+        {% endif %}
+
+
+        <!-- Comic Panels -->
+        {% for panel in panels %}
+
+        <section class="panel">
+
+            <h2>
+                Panel {{ panel.panel_number }}:
+                {{ panel.title }}
+            </h2>
+
+            <img
+                class="comic-image"
+                src="{{ panel.image_url }}"
+                alt="Comic panel {{ panel.panel_number }}"
+            >
+
+            <p>
+                <strong>Scene:</strong>
+                {{ panel.scene_description }}
+            </p>
+
+            <p>
+                <strong>Caption:</strong>
+                {{ panel.caption }}
+            </p>
+
+            <p>
+                <strong>Narration:</strong>
+                {{ panel.narration }}
+            </p>
+
+            <p>
+                <strong>Dialogue:</strong>
+                {{ panel.dialogue }}
+            </p>
+
+            <details>
+
+                <summary>
+                    Image Prompt
+                </summary>
+
+                <p>
+                    {{ panel.image_prompt }}
+                </p>
+
+            </details>
+
+        </section>
+
+        {% endfor %}
+
+
+        <!-- PDF Download -->
+        {% if pdf_url %}
+
+        <button
+            type="button"
+            class="button"
+            id="download-pdf-btn"
+            data-pdf-url="{{ pdf_url }}"
+        >
+            Download Comic PDF
+        </button>
+
+        <p
+            id="download-status"
+            style="display: none;"
+        >
+            Preparing your PDF...
+        </p>
+
+        {% endif %}
+
+
+        <!-- Create another comic -->
+
+        <a
+            class="secondary"
+            href="/"
+        >
+            ← Create Another Comic
+        </a>
+
+    </section>
+
+</main>
+
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const button =
+            document.getElementById(
+                "download-pdf-btn"
+            );
+
+        const status =
+            document.getElementById(
+                "download-status"
+            );
+
+        if (!button) {
+            return;
+        }
+
+
+        button.addEventListener(
+            "click",
+            async function () {
+
+                const pdfUrl =
+                    button.dataset.pdfUrl;
+
+                if (!pdfUrl) {
+
+                    alert(
+                        "PDF file is not available."
+                    );
+
+                    return;
+                }
+
+
+                try {
+
+                    button.disabled = true;
+
+                    button.textContent =
+                        "Downloading...";
+
+
+                    if (status) {
+
+                        status.style.display =
+                            "block";
+
+                    }
+
+
+                    /*
+                     * Fetch PDF from server
+                     */
+
+                    const response =
+                        await fetch(pdfUrl);
+
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            "PDF download failed."
+                        );
+
+                    }
+
+
+                    /*
+                     * Convert response to Blob
+                     */
+
+                    const blob =
+                        await response.blob();
+
+
+                    /*
+                     * Create temporary download URL
+                     */
+
+                    const blobUrl =
+                        window.URL.createObjectURL(
+                            blob
+                        );
+
+
+                    /*
+                     * Create temporary
+                     * download link
+                     */
+
+                    const link =
+                        document.createElement(
+                            "a"
+                        );
+
+                    link.href = blobUrl;
+
+                    link.download =
+                        "ComicCraft_Comic.pdf";
+
+
+                    document.body.appendChild(
+                        link
+                    );
+
+
+                    /*
+                     * Start download
+                     */
+
+                    link.click();
+
+
+                    /*
+                     * Cleanup
+                     */
+
+                    link.remove();
+
+                    window.URL.revokeObjectURL(
+                        blobUrl
+                    );
+
+
+                    /*
+                     * Wait briefly and
+                     * move to success page
+                     */
+
+                    setTimeout(
+                        function () {
+
+                            window.location.href =
+                                "/export-success";
+
+                        },
+                        1000
+                    );
+
+                }
+
+                catch (error) {
+
+                    console.error(
+                        error
+                    );
+
+                    button.disabled = false;
+
+                    button.textContent =
+                        "Download Comic PDF";
+
+
+                    if (status) {
+
+                        status.style.display =
+                            "none";
+
+                    }
+
+
+                    alert(
+                        "PDF download failed. " +
+                        "Please try again."
+                    );
+
+                }
+
+            }
+        );
+
+    }
+);
+
+</script>
+
+</body>
+
+</html>
